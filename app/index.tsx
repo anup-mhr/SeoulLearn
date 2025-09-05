@@ -15,9 +15,10 @@ export default function SplashScreen() {
       //   if (isAuthenticated) {
       // router.push("/(tabs)/dashboard");
       //   } else {
-      router.push("/onboarding");
+      // router.push("/onboarding");
       //   }
       // }
+      router.push("/eSewaPaymentExample");
     }, 500);
 
     return () => clearTimeout(timer);
