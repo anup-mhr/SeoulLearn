@@ -1,0 +1,16 @@
+// Payment status constants
+export const PAYMENT_STATUS = {
+  COMPLETE: "COMPLETE",
+  PENDING: "PENDING",
+  FULL_REFUND: "FULL_REFUND",
+  PARTIAL_REFUND: "PARTIAL_REFUND",
+  AMBIGUOUS: "AMBIGUOUS",
+  NOT_FOUND: "NOT_FOUND",
+  CANCELED: "CANCELED",
+};
+
+// Environment constants
+export const ENVIRONMENT = {
+  TEST: "TEST",
+  PRODUCTION: "PRODUCTION",
+};
