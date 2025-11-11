@@ -8,7 +8,7 @@ function AudioPlayer({ url }: { url: string }) {
     console.log('audio', url)
 
 
-    const audioPlayer = useAudioPlayer('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', 500);
+    const audioPlayer = useAudioPlayer('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3');
 
     console.log(audioPlayer, 'audioPlayer')
     if (!audioPlayer) return null;
