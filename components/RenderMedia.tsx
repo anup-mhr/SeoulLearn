@@ -1,145 +1,64 @@
 import { colors } from "@/styles/theme";
-import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { useVideoPlayer, VideoSource, VideoView } from "expo-video";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { Image, StyleSheet, Text, View } from "react-native";
+import AudioPlayer from "./AudioPlayer";
 
 const elephantsDreamSource: VideoSource = {
   uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
   useCaching: true,
 };
 
-function MediaRenderer({ media }: { media: { type: string; url: string } }) {
-  const audioPlayer = useAudioPlayer({
-    uri: media.url ? media.url : undefined,
-  });
 
-  const audioStatus = useAudioPlayerStatus(audioPlayer);
-  const { currentTime, duration, playing, mute } = audioStatus;
+// eslint-disable-next-line react/display-name
+const MediaRenderer = React.memo(
+  ({ media }: { media: { type: string; url: string } }) => {
+    console.log("media", media);
 
-  // Format time in MM:SS format
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
+    // Video player (only used for video type)
+    const videoPlayer = useVideoPlayer(
+      media.type === "video"
+        ? { uri: media.url, useCaching: true }
+        : elephantsDreamSource
+    );
 
-  const toggleAudioPlayback = async () => {
-    if (!audioPlayer) return;
+    switch (media.type) {
+      case "image":
+        return (
+          <View style={styles.mediaContainer}>
+            <Image
+              source={{ uri: media.url }}
+              style={styles.mediaImage}
+              resizeMode="contain"
+            />
+          </View>
+        );
 
-    if (playing) {
-      await audioPlayer.pause();
-    } else {
-      await audioPlayer.play();
+      case "video":
+        return (
+          <View style={styles.contentContainer}>
+            <VideoView
+              player={videoPlayer}
+              style={stylesVideo.video}
+              allowsPictureInPicture={true}
+            />
+          </View>
+        );
+
+      case "audio":
+        return <AudioPlayer url={media.url} />;
+
+      default:
+        return (
+          <View style={styles.mediaContainer}>
+            <Text style={styles.unsupportedText}>
+              Unsupported media type: {media.type}
+            </Text>
+          </View>
+        );
     }
-  };
-
-  const restartAudio = () => {
-    if (!audioPlayer) return;
-    audioPlayer.seekTo(0);
-    audioPlayer.play();
-  };
-
-  // Video Starts here
-
-  const videoPlayer = useVideoPlayer(elephantsDreamSource);
-  switch (media.type) {
-    case "image":
-      return (
-        <View style={styles.mediaContainer}>
-          <Image
-            source={{ uri: media.url }}
-            style={styles.mediaImage}
-            resizeMode="contain"
-          />
-        </View>
-      );
-
-    case "video":
-      return (
-        <View style={styles.contentContainer}>
-          <VideoView
-            player={videoPlayer}
-            style={stylesVideo.video}
-            allowsPictureInPicture={true}
-            // nativeControls={false}
-          />
-        </View>
-      );
-
-    case "audio":
-      if (!audioPlayer) return null;
-
-      return (
-        <View style={styles.mediaContainer}>
-          <View style={styles.audioHeader}>
-            <Text style={styles.audioTitle}>🎵 Audio Track</Text>
-            {duration > 0 && (
-              <Text style={styles.audioDuration}>
-                {formatTime(currentTime)} / {formatTime(duration)}
-              </Text>
-            )}
-          </View>
-
-          {/* Progress Bar */}
-          {duration > 0 && (
-            <View style={styles.audioProgressContainer}>
-              <View
-                style={[
-                  styles.audioProgressBar,
-                  { width: `${(currentTime / duration) * 100}%` },
-                ]}
-              />
-            </View>
-          )}
-
-          {/* Controls */}
-          <View style={styles.audioControls}>
-            <TouchableOpacity
-              style={styles.audioControlButton}
-              onPress={restartAudio}
-            >
-              <Text style={styles.audioControlIcon}>⏮</Text>
-              <Text style={styles.audioControlText}>Restart</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.audioControlButton, styles.primaryControlButton]}
-              onPress={toggleAudioPlayback}
-            >
-              <Text
-                style={[styles.audioControlIcon, styles.primaryControlIcon]}
-              >
-                {playing ? "⏸" : "▶"}
-              </Text>
-              <Text
-                style={[styles.audioControlText, styles.primaryControlText]}
-              >
-                {playing ? "Pause" : "Play"}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.audioControlButton}
-              onPress={() => audioPlayer.seekTo(currentTime + 10)}
-              disabled={!duration}
-            >
-              <Text style={styles.audioControlIcon}>⏭</Text>
-              <Text style={styles.audioControlText}>+10s</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-
-    default:
-      return (
-        <View style={styles.mediaContainer}>
-          <Text style={styles.unsupportedText}>
-            Unsupported media type: {media.type}
-          </Text>
-        </View>
-      );
   }
-}
+);
 
 export default MediaRenderer;
 

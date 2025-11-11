@@ -5,7 +5,7 @@ import { colors } from "@/styles/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   Alert,
@@ -15,18 +15,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-
-// Color theme
-// const colors = {
-//   primary: "#6366F1",
-//   secondary: "#8B5CF6",
-//   primaryLight: "#818CF8",
-//   primaryExtraLight: "#E0E7FF",
-//   black: "#1F2937",
-//   grayLight: "#E5E7EB",
-//   grayDark: "#9CA3AF",
-//   grayExtraLight: "#F3F4F6",
-// };
 
 // Mock exam data
 const examQuestions = [
@@ -101,44 +89,14 @@ export default function ExamScreen() {
   const [timeLeft, setTimeLeft] = useState(28 * 60 + 15); // 28:15 in seconds
   const [showResults, setShowResults] = useState(false);
 
-  // Timer effect
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 0) {
-          clearInterval(timer);
-          handleFinishExam();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  // Memoize the current question to prevent unnecessary re-renders
+  const currentQ = useMemo(
+    () => examQuestions[currentQuestion],
+    [currentQuestion]
+  );
 
-    return () => clearInterval(timer);
-  }, []);
-
-  const handleAnswerSelect = (optionId: string) => {
-    setSelectedAnswer(optionId);
-    setAnswers({ ...answers, [currentQuestion]: optionId });
-  };
-
-  const handleNext = () => {
-    if (currentQuestion < examQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(answers[currentQuestion + 1] || null);
-    } else {
-      handleFinishExam();
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-      setSelectedAnswer(answers[currentQuestion - 1] || null);
-    }
-  };
-
-  const handleFinishExam = () => {
+  // Memoize callbacks
+  const handleFinishExam = useCallback(() => {
     let correctAnswers = 0;
     examQuestions.forEach((question, index) => {
       const selectedOption = question.options.find(
@@ -159,59 +117,47 @@ export default function ExamScreen() {
         },
       ]
     );
-  };
+  }, [answers]);
 
-  const currentQ = examQuestions[currentQuestion];
+  // Timer effect
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 0) {
+          clearInterval(timer);
+          handleFinishExam();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-  // const renderMedia = (media: { type: string; url: string }): JSX.Element => {
-  //   switch (media.type) {
-  //     case "image":
-  //       return (
-  //         <View style={styles.mediaContainer}>
-  //           <Image
-  //             source={{ uri: media.url }}
-  //             style={styles.mediaImage}
-  //             resizeMode="contain"
-  //           />
-  //         </View>
-  //       );
-  //     // case "video":
-  //     //   return (
-  //     //     <View style={styles.mediaContainer}>
-  //     //       <Video
-  //     //         source={{ uri: media.url }}
-  //     //         style={styles.mediaVideo}
-  //     //         useNativeControls
-  //     //         resizeMode="contain"
-  //     //         shouldPlay={false}
-  //     //       />
-  //     //     </View>
-  //     //   );
+    return () => clearInterval(timer);
+  }, [handleFinishExam]);
 
-  //     case "audio": {
-  //       // Using expo-audio's useAudioPlayer hook
-  //       const player = useAudioPlayer(media.url);
-  //       return (
-  //         <View style={styles.mediaContainer}>
-  //           <TouchableOpacity onPress={() => player.play()}>
-  //             <Text> Play </Text>
-  //           </TouchableOpacity>
-  //           <TouchableOpacity
-  //             onPress={() => {
-  //               player.seekTo(0);
-  //               player.play();
-  //             }}
-  //           >
-  //             <Text> Replay </Text>
-  //           </TouchableOpacity>
-  //         </View>
-  //       );
-  //     }
+  const handleAnswerSelect = useCallback(
+    (optionId: string) => {
+      setSelectedAnswer(optionId);
+      setAnswers((prev) => ({ ...prev, [currentQuestion]: optionId }));
+    },
+    [currentQuestion]
+  );
 
-  //     default:
-  //       return <View></View>;
-  //   }
-  // };
+  const handleNext = useCallback(() => {
+    if (currentQuestion < examQuestions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1);
+      setSelectedAnswer(answers[currentQuestion + 1] || null);
+    } else {
+      handleFinishExam();
+    }
+  }, [currentQuestion, answers, handleFinishExam]);
+
+  const handlePrevious = useCallback(() => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prev) => prev - 1);
+      setSelectedAnswer(answers[currentQuestion - 1] || null);
+    }
+  }, [currentQuestion, answers]);
 
   return (
     <>
@@ -571,6 +517,6 @@ const styles = StyleSheet.create({
   },
   mediaAudio: {
     width: "100%",
-    height: 60, // small bar style for audio
+    height: 60,
   },
 });

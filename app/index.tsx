@@ -15,7 +15,8 @@ export default function SplashScreen() {
       //   if (isAuthenticated) {
       // router.push("/(tabs)/dashboard");
       //   } else {
-      router.push("/onboarding");
+      // router.push("/onboarding");
+      router.push("/(tabs)/dashboard");
       //   }
       // }
     }, 500);
@@ -44,11 +45,6 @@ export default function SplashScreen() {
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
   content: {
     alignItems: "center",
   },
