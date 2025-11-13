@@ -37,3 +37,8 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Want Expo to manage everything automatically:
+# Delete the native folders:
+android
+ios
