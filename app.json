@@ -11,13 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.zerohg.seoulLearn",
-      "icon": "./assets/icons/ios-light.png",
-      "dark": {
-        "icon": "./assets/icons/ios-dark.png"
-      },
-      "tinted": {
-        "icon": "./assets/icons/ios-tinted.png"
-      }
+      "icon": "./assets/icons/ios-light.png"
     },
     "android": {
       "adaptiveIcon": {
