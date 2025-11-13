@@ -5,6 +5,7 @@ import { colors } from "@/styles/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
+import * as ScreenOrientation from "expo-screen-orientation";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
@@ -118,6 +119,16 @@ export default function ExamScreen() {
       ]
     );
   }, [answers]);
+
+  useEffect(() => {
+    // Lock to landscape when this screen opens
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.LANDSCAPE);
+
+    // Return to portrait when leaving
+    return () => {
+      ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+    };
+  }, []);
 
   // Timer effect
   useEffect(() => {
