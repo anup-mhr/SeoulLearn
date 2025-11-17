@@ -1,27 +1,58 @@
-import { LinearGradient } from "expo-linear-gradient";
-import { Link, router } from "expo-router";
-import { Formik } from "formik";
-import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, View } from "react-native";
-import { Button, Checkbox, Text, TextInput } from "react-native-paper";
-import * as Yup from "yup";
-
 import colors from "@/constants/color";
 import { useAuth } from "@/store/AuthContext";
+import { LinearGradient } from "expo-linear-gradient";
+import { Link, router } from "expo-router";
+import React, { useCallback, useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
+import { Button, Checkbox, Text, TextInput } from "react-native-paper";
 
-const validationSchema = Yup.object().shape({
-  email: Yup.string().email("Invalid email").required("Email is required"),
-  password: Yup.string().required("Password is required"),
-});
+// Simple email validation
+const isValidEmail = (email: string): boolean => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+
+interface FormErrors {
+  email?: string;
+  password?: string;
+}
 
 export default function LoginScreen() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState({ email: false, password: false });
   const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { signIn } = useAuth();
 
-  const handleLogin = async (values: any, { setSubmitting }: any) => {
+  // Validate form
+  const validate = useCallback((): boolean => {
+    const newErrors: FormErrors = {};
+
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!isValidEmail(email)) {
+      newErrors.email = "Invalid email";
+    }
+
+    if (!password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [email, password]);
+
+  const handleLogin = useCallback(async () => {
+    // Mark all fields as touched
+    setTouched({ email: true, password: true });
+
+    if (!validate()) return;
+
+    setIsSubmitting(true);
     try {
-      await signIn(values);
-      console.log("valuse", values);
+      await signIn({ email, password });
       router.push("/(tabs)/dashboard");
     } catch (error: any) {
       Alert.alert(
@@ -29,20 +60,86 @@ export default function LoginScreen() {
         error.response?.data?.message || "Login failed"
       );
     } finally {
-      setSubmitting(false);
+      setIsSubmitting(false);
     }
-  };
+  }, [email, password, signIn, validate]);
+
+  const handleEmailChange = useCallback(
+    (text: string) => {
+      setEmail(text);
+      if (touched.email) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          if (!text.trim()) {
+            newErrors.email = "Email is required";
+          } else if (!isValidEmail(text)) {
+            newErrors.email = "Invalid email";
+          } else {
+            delete newErrors.email;
+          }
+          return newErrors;
+        });
+      }
+    },
+    [touched.email]
+  );
+
+  const handlePasswordChange = useCallback(
+    (text: string) => {
+      setPassword(text);
+      if (touched.password) {
+        setErrors((prev) => {
+          const newErrors = { ...prev };
+          if (!text) {
+            newErrors.password = "Password is required";
+          } else {
+            delete newErrors.password;
+          }
+          return newErrors;
+        });
+      }
+    },
+    [touched.password]
+  );
+
+  const handleEmailBlur = useCallback(() => {
+    setTouched((prev) => ({ ...prev, email: true }));
+    if (!email.trim()) {
+      setErrors((prev) => ({ ...prev, email: "Email is required" }));
+    } else if (!isValidEmail(email)) {
+      setErrors((prev) => ({ ...prev, email: "Invalid email" }));
+    }
+  }, [email]);
+
+  const handlePasswordBlur = useCallback(() => {
+    setTouched((prev) => ({ ...prev, password: true }));
+    if (!password) {
+      setErrors((prev) => ({ ...prev, password: "Password is required" }));
+    }
+  }, [password]);
+
+  const toggleRememberMe = useCallback(() => {
+    setRememberMe((prev) => !prev);
+  }, []);
+
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
+
+  const handleForgotPassword = useCallback(() => {
+    router.push("/(auth)/forgot-password");
+  }, []);
 
   return (
-    // <KeyboardAvoidingView
-    //   style={{ flex: 1 }}
-    //   behavior={Platform.OS === "ios" ? "padding" : "height"}
-    // >
     <LinearGradient
       colors={[colors.primary, colors.secondary]}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.header}>
           <Text style={styles.title}>Welcome Back!</Text>
           <Text style={styles.subtitle}>
@@ -51,91 +148,92 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.formContainer}>
-          <Formik
-            initialValues={{ email: "", password: "" }}
-            validationSchema={validationSchema}
-            onSubmit={handleLogin}
+          <TextInput
+            label="Email"
+            value={email}
+            onChangeText={handleEmailChange}
+            onBlur={handleEmailBlur}
+            error={touched.email && !!errors.email}
+            style={styles.input}
+            mode="outlined"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            autoComplete="email"
+            textContentType="emailAddress"
+            returnKeyType="next"
+            editable={!isSubmitting}
+          />
+          {touched.email && errors.email && (
+            <Text style={styles.errorText}>{errors.email}</Text>
+          )}
+
+          <TextInput
+            label="Password"
+            value={password}
+            onChangeText={handlePasswordChange}
+            onBlur={handlePasswordBlur}
+            error={touched.password && !!errors.password}
+            style={styles.input}
+            mode="outlined"
+            secureTextEntry={!showPassword}
+            autoComplete="password"
+            textContentType="password"
+            returnKeyType="done"
+            onSubmitEditing={handleLogin}
+            editable={!isSubmitting}
+            right={
+              <TextInput.Icon
+                icon={showPassword ? "eye-off" : "eye"}
+                onPress={togglePasswordVisibility}
+              />
+            }
+          />
+          {touched.password && errors.password && (
+            <Text style={styles.errorText}>{errors.password}</Text>
+          )}
+
+          <View style={styles.checkboxContainer}>
+            <Checkbox
+              color={colors.primary}
+              status={rememberMe ? "checked" : "unchecked"}
+              onPress={toggleRememberMe}
+              disabled={isSubmitting}
+            />
+            <Text style={styles.checkboxLabel} onPress={toggleRememberMe}>
+              Remember me
+            </Text>
+          </View>
+
+          <Button
+            mode="contained"
+            onPress={handleLogin}
+            loading={isSubmitting}
+            disabled={isSubmitting}
+            style={styles.loginButton}
+            labelStyle={styles.loginButtonLabel}
           >
-            {({
-              handleChange,
-              handleBlur,
-              handleSubmit,
-              values,
-              errors,
-              touched,
-              isSubmitting,
-            }) => (
-              <>
-                <TextInput
-                  label="Email"
-                  value={values.email}
-                  onChangeText={handleChange("email")}
-                  onBlur={handleBlur("email")}
-                  error={touched.email && !!errors.email}
-                  style={styles.input}
-                  mode="outlined"
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                />
-                {touched.email && errors.email && (
-                  <Text style={styles.errorText}>{errors.email}</Text>
-                )}
+            Sign In
+          </Button>
 
-                <TextInput
-                  label="Password"
-                  value={values.password}
-                  onChangeText={handleChange("password")}
-                  onBlur={handleBlur("password")}
-                  error={touched.password && !!errors.password}
-                  style={styles.input}
-                  mode="outlined"
-                  secureTextEntry
-                  right={<TextInput.Icon icon="eye" />}
-                />
-                {touched.password && errors.password && (
-                  <Text style={styles.errorText}>{errors.password}</Text>
-                )}
-
-                <View style={styles.checkboxContainer}>
-                  <Checkbox
-                    color={"black"}
-                    status={rememberMe ? "checked" : "unchecked"}
-                    onPress={() => setRememberMe(!rememberMe)}
-                  />
-                  <Text style={styles.checkboxLabel}>Remember me</Text>
-                </View>
-
-                <Button
-                  mode="contained"
-                  onPress={() => handleSubmit()}
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                  style={styles.loginButton}
-                >
-                  Sign In
-                </Button>
-
-                <Button
-                  mode="text"
-                  onPress={() => router.push("/(auth)/forgot-password")}
-                  style={styles.forgotButton}
-                >
-                  Forgot Password?
-                </Button>
-              </>
-            )}
-          </Formik>
+          <Button
+            mode="text"
+            onPress={handleForgotPassword}
+            style={styles.forgotButton}
+            labelStyle={styles.forgotButtonLabel}
+            disabled={isSubmitting}
+          >
+            Forgot Password?
+          </Button>
         </View>
 
         <View style={styles.footer}>
-          <Text style={styles.footerText}>Don&apos;t have an account?</Text>
-          <Link href="/(auth)/register" style={styles.signUpLabel}>
-            Sign Up
+          <Text style={styles.footerText}>Don&apos;t have an account? </Text>
+          <Link href="/(auth)/register" asChild>
+            <Text style={styles.signUpLabel}>Sign Up</Text>
           </Link>
         </View>
       </ScrollView>
     </LinearGradient>
-    // </KeyboardAvoidingView>
   );
 }
 
@@ -169,6 +267,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 20,
     marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
   },
   input: {
     marginBottom: 16,
@@ -186,16 +289,21 @@ const styles = StyleSheet.create({
   },
   checkboxLabel: {
     marginLeft: 8,
+    flex: 1,
   },
   loginButton: {
     paddingVertical: 8,
     marginBottom: 16,
     backgroundColor: colors.primary,
+  },
+  loginButtonLabel: {
     color: "white",
   },
   forgotButton: {
     alignSelf: "center",
-    color: "black",
+  },
+  forgotButtonLabel: {
+    color: colors.primary,
   },
   footer: {
     flexDirection: "row",
@@ -208,6 +316,6 @@ const styles = StyleSheet.create({
   signUpLabel: {
     color: "white",
     fontWeight: "bold",
-    marginLeft: 4,
+    textDecorationLine: "underline",
   },
 });
