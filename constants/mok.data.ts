@@ -113,4 +113,19 @@ const MOCK_EXAMS_VIEW = Array.from({ length: 7 }, (_, i) => ({
   progress: 0.4,
 }));
 
-export { EXAM_QUESTIONS, MOCK_EXAMS, MOCK_EXAMS_VIEW, MOCK_STUDY_MATERIALS };
+const USER_DATA = {
+  name: "Aarav Maharjan",
+  role: "Korean Language Learner",
+  location: "Kathmandu, Nepal",
+  email: "aarav.maharjan@mail.com",
+  phone: "+977 9841234567",
+  memberSince: "January 2024",
+};
+
+export {
+  EXAM_QUESTIONS,
+  MOCK_EXAMS,
+  MOCK_EXAMS_VIEW,
+  MOCK_STUDY_MATERIALS,
+  USER_DATA,
+};
