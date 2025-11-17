@@ -6,8 +6,6 @@ import { Alert, ScrollView, StyleSheet, View } from "react-native";
 import { Button, Checkbox, Text, TextInput } from "react-native-paper";
 import * as Yup from "yup";
 
-// import { authService } from "../../services/api/authService";
-// import { useAuth } from "../../store/AuthContext";
 import colors from "@/constants/color";
 import { useAuth } from "@/store/AuthContext";
 
@@ -36,6 +34,10 @@ export default function LoginScreen() {
   };
 
   return (
+    // <KeyboardAvoidingView
+    //   style={{ flex: 1 }}
+    //   behavior={Platform.OS === "ios" ? "padding" : "height"}
+    // >
     <LinearGradient
       colors={[colors.primary, colors.secondary]}
       style={styles.container}
@@ -133,6 +135,7 @@ export default function LoginScreen() {
         </View>
       </ScrollView>
     </LinearGradient>
+    // </KeyboardAvoidingView>
   );
 }
 

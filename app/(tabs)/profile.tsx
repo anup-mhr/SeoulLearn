@@ -1,4 +1,5 @@
 import colors from "@/constants/color";
+import { useAuth } from "@/store/AuthContext";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
@@ -16,12 +17,11 @@ import {
 } from "react-native";
 import { Avatar, Card, Switch } from "react-native-paper";
 
-// import { useAuth } from '../../store/AuthContext';
 // import { useCourse } from '../../store/CourseContext';
 // import { useExam } from '../../store/ExamContext';
 
 const Profile = () => {
-  //   const { user, signOut, updateUser } = useAuth();
+  const { signOut } = useAuth();
   //   const { progress } = useCourse();
   //   const { examResults } = useExam();
   const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
@@ -61,6 +61,7 @@ const Profile = () => {
 
   const handleConfirmLogout = () => {
     setVisible(false);
+    signOut();
     console.log("User logged out");
     router.replace("/(auth)/login");
   };
