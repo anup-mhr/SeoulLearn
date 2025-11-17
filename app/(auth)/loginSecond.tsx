@@ -1,10 +1,10 @@
 import { colors } from "@/styles/theme";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";
 import { Formik } from "formik";
 import React, { useState } from "react";
 import {
-  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -33,9 +33,10 @@ const LoginSecond = () => {
           Sign in to continue your Korean learning journey
         </Text>
         <Image
-          source={require("../../assets/images/react-logo.png")}
+          cachePolicy="memory-disk"
+          source={require("../../assets/icons/adaptive-icon.png")}
           style={{ width: 100, height: 100, marginTop: 20 }}
-          resizeMode="contain"
+          contentFit="contain"
           className="border-2 border-white rounded-full"
         />
       </LinearGradient>

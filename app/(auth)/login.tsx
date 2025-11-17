@@ -8,7 +8,8 @@ import * as Yup from "yup";
 
 // import { authService } from "../../services/api/authService";
 // import { useAuth } from "../../store/AuthContext";
-import { colors } from "../../styles/theme";
+import colors from "@/constants/color";
+import { useAuth } from "@/store/AuthContext";
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().email("Invalid email").required("Email is required"),
@@ -17,12 +18,11 @@ const validationSchema = Yup.object().shape({
 
 export default function LoginScreen() {
   const [rememberMe, setRememberMe] = useState(false);
-  // const { signIn } = useAuth();
+  const { signIn } = useAuth();
 
   const handleLogin = async (values: any, { setSubmitting }: any) => {
     try {
-      // const response = await authService.login(values.email, values.password);
-      // await signIn(response.token, response.user);
+      await signIn(values);
       console.log("valuse", values);
       router.push("/(tabs)/dashboard");
     } catch (error: any) {

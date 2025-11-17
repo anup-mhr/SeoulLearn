@@ -1,14 +1,14 @@
-import { colors } from "@/styles/theme";
+import colors from "@/constants/color";
+import { Image } from "expo-image";
 import { useVideoPlayer, VideoSource, VideoView } from "expo-video";
 import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 import AudioPlayer from "./AudioPlayer";
 
 const elephantsDreamSource: VideoSource = {
   uri: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
   useCaching: true,
 };
-
 
 // eslint-disable-next-line react/display-name
 const MediaRenderer = React.memo(
@@ -27,9 +27,10 @@ const MediaRenderer = React.memo(
         return (
           <View style={styles.mediaContainer}>
             <Image
+              cachePolicy="memory-disk"
               source={{ uri: media.url }}
               style={styles.mediaImage}
-              resizeMode="contain"
+              contentFit="contain"
             />
           </View>
         );

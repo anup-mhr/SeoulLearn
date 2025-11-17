@@ -1,7 +1,7 @@
 import MediaRenderer from "@/components/RenderMedia";
 import ProgressBar from "@/components/ui/ProgressBar";
+import colors from "@/constants/color";
 import { formatTime } from "@/libs/helpers";
-import { colors } from "@/styles/theme";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";

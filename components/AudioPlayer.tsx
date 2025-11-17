@@ -1,5 +1,5 @@
+import colors from "@/constants/color";
 import { formatTime } from "@/libs/helpers";
-import { colors } from "@/styles/theme";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 

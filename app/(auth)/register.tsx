@@ -1,4 +1,5 @@
 // app/(auth)/register.js
+import colors from "@/constants/color";
 import { Picker } from "@react-native-picker/picker";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
@@ -9,7 +10,6 @@ import { Button, Text, TextInput } from "react-native-paper";
 import * as Yup from "yup";
 
 // import { authService } from "../../services/api/authService";
-import { colors } from "../../styles/theme";
 
 const validationSchema = Yup.object().shape({
   fullName: Yup.string()

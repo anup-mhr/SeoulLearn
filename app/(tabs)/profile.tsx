@@ -1,4 +1,4 @@
-import { colors } from "@/styles/theme";
+import colors from "@/constants/color";
 import { MaterialIcons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";

@@ -13,9 +13,9 @@ import { Avatar, Card, ProgressBar, Text } from "react-native-paper";
 // import { useAuth } from "../../store/AuthContext";
 // import { useCourse } from "../../store/CourseContext";
 // import { useExam } from "../../store/ExamContext";
+import colors from "@/constants/color";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Link } from "expo-router";
-import { colors } from "../../styles/theme";
 
 const { width } = Dimensions.get("window");
 

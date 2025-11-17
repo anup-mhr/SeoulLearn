@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import {
   Dimensions,
-  Image,
   ImageBackground,
   ScrollView,
   StyleSheet,
@@ -13,9 +12,10 @@ import { Avatar, Card, Chip, Text, TextInput } from "react-native-paper";
 // import LoadingSpinner from "../../components/ui/LoadingSpinner";
 // import { coursesService } from "../../services/api/coursesService";
 // import { useCourse } from "../../store/CourseContext";
+import colors from "@/constants/color";
 import { MaterialIcons } from "@expo/vector-icons";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { colors } from "../../styles/theme";
 
 const categories = [
   "All",
@@ -298,9 +298,10 @@ export default function CoursesScreen() {
             </TouchableOpacity>
           </View>
           <Image
+            cachePolicy="memory-disk"
             source={require("../../assets/images/korean-girl.jpeg")}
             style={{ height: 80, width: 80, borderRadius: 10 }}
-            resizeMode="cover"
+            contentFit="cover"
           />
         </LinearGradient>
       </ScrollView>

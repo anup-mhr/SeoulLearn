@@ -1,9 +1,10 @@
+import colors from "@/constants/color";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { Dimensions, Image, StyleSheet, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
 import { Button, Text } from "react-native-paper";
-import { colors } from "../styles/theme";
 
 const { width } = Dimensions.get("window");
 
@@ -13,21 +14,21 @@ const onboardingData = [
     title: "Learn Korean Effectively",
     description:
       "Master Korean language with interactive lessons designed for Nepali students",
-    image: require("../assets/images/react-logo.png"),
+    image: require("../assets/icons/adaptive-icon.png"),
   },
   {
     id: 2,
     title: "Practice with Real Exams",
     description:
       "Prepare for Korean proficiency tests with mock exams and practice questions",
-    image: require("../assets/images/react-logo.png"),
+    image: require("../assets/icons/adaptive-icon.png"),
   },
   {
     id: 3,
     title: "Track Your Progress",
     description:
       "Monitor your learning journey and celebrate your achievements",
-    image: require("../assets/images/react-logo.png"),
+    image: require("../assets/icons/adaptive-icon.png"),
   },
 ];
 
@@ -54,7 +55,11 @@ export default function OnboardingScreen() {
       style={styles.container}
     >
       <View style={styles.content}>
-        <Image source={currentItem.image} style={styles.image} />
+        <Image
+          cachePolicy="memory-disk"
+          source={currentItem.image}
+          style={styles.image}
+        />
         <Text style={styles.title}>{currentItem.title}</Text>
         <Text style={styles.description}>{currentItem.description}</Text>
 

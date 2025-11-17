@@ -1,29 +1,29 @@
+import colors from "@/constants/color";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import React, { useEffect } from "react";
-import { Image, StyleSheet, View } from "react-native";
-import { Text } from "react-native-paper";
-// import { useAuth } from "../store/AuthContext";
 import { router } from "expo-router";
-import { colors } from "../styles/theme";
+import React, { useEffect } from "react";
+import { StyleSheet, View } from "react-native";
+import { Text } from "react-native-paper";
+import { useAuth } from "../store/AuthContext";
 
 export default function SplashScreen() {
-  // const { isAuthenticated, isLoading } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      // if (!isLoading) {
-      //   if (isAuthenticated) {
-      // router.push("/(tabs)/dashboard");
-      //   } else {
-      // router.push("/onboarding");
-      router.push("/(tabs)/dashboard");
-      //   }
-      // }
+      if (!loading) {
+        if (user) {
+          router.push("/(tabs)/dashboard");
+        } else {
+          router.push("/onboarding");
+          // router.push("/(tabs)/dashboard");
+        }
+      }
     }, 500);
 
     return () => clearTimeout(timer);
-  }, []);
-  // [isLoading, isAuthenticated]);
+  }, [loading, user]);
 
   return (
     <LinearGradient
@@ -33,9 +33,10 @@ export default function SplashScreen() {
     >
       <View style={styles.content}>
         <Image
-          source={require("../assets/images/react-logo.png")}
+          cachePolicy="memory-disk"
+          source={require("../assets/icons/adaptive-icon.png")}
           style={styles.logo}
-          resizeMode="contain"
+          contentFit="contain"
         />
         <Text style={styles.title}>KoreaLearn</Text>
         <Text style={styles.subtitle}>Master Korean Language</Text>

@@ -1,8 +1,21 @@
-export default {
-  primary: "#4c669f",
-  secondary: "#3b5998",
-  accent: "#f1c40f",
-  background: "#ffffff",
+const colors = {
+  primary: "#4f46e5",
+  primaryLight: "#6366F1",
+  primaryExtraLight: "#e0e7ff",
+  black: "#1F2937",
+  grayLight: "#E5E7EB",
+  grayExtraLight: "#F3F4F6",
+  grayDark: "#9CA3AF",
+  secondary: "#7c3aed",
+  tertiery: "#7d69ed",
+  accent: "#f5a623",
+  background: "#F9FAFB",
   text: "#333333",
-  buttonText: "#ffffff",
+  error: "#ff4444",
+  textSecondary: "#777777",
+  surface: "#ffffff",
+  success: "green",
+  warning: "#ff9800",
+  elevation: { level3: "rgba(0, 0, 0, 0.1)" },
 };
+export default colors;
