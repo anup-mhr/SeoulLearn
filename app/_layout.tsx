@@ -10,7 +10,7 @@ import { AuthProvider } from "../store/AuthContext";
 // import { CourseProvider } from "../store/CourseContext";
 // import { ExamProvider } from "../store/ExamContext";
 import colors from "@/constants/color";
-import { theme } from "@/styles/theme";
+import { theme } from "@/constants/theme";
 import { StatusBar, StyleSheet } from "react-native";
 
 SplashScreen.preventAutoHideAsync();
