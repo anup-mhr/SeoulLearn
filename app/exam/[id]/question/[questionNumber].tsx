@@ -1,4 +1,5 @@
 // import { Audio, AVPlaybackStatus } from "expo-av";
+import colors from "@/constants/color";
 import { getQuestionByNumber, mockUserAnswers } from "@/constants/mock.exam";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -157,119 +159,154 @@ export default function QuestionScreen() {
   const remainingQuestions = 40 - parseInt(questionNumber);
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.headerText}>1. New Pattern UBT - 001</Text>
-        <Text style={styles.headerInfo}>Whole Question:40</Text>
-        <Text style={styles.headerInfo}>
-          Remaining Question:{remainingQuestions}
-        </Text>
-        <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
-      </View>
+    <>
+      <StatusBar barStyle="light-content" backgroundColor={colors.primary} />
+      <View style={styles.container}>
+        {/* Header */}
+        <View style={styles.header}>
+          <Text style={styles.headerText}>1. New Pattern UBT - 001</Text>
+          <Text style={styles.headerInfo}>Whole Question: 40</Text>
+          <Text style={styles.headerInfo}>
+            Remaining Question: {remainingQuestions}
+          </Text>
+          <Text style={styles.timer}>{formatTime(timeRemaining)}</Text>
+        </View>
 
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.contentContainer}>
-          {/* Group Title */}
-          {question.groupInfo && (
-            <View style={styles.groupHeader}>
-              <Text style={styles.groupTitle}>
-                {question.groupInfo.groupTitleKorean}
-              </Text>
-            </View>
-          )}
-
-          {/* Question */}
-          <View style={styles.questionContainer}>
-            <Text style={styles.questionNumber}>{questionNumber}.</Text>
-
-            {/* Audio Player */}
-            {question.content.type === "audio" && (
-              <TouchableOpacity
-                style={styles.audioPlayer}
-                //   onPress={playAudio}
-              >
-                <View style={styles.audioButton}>
-                  <Text style={styles.audioIcon}>{isPlaying ? "⏸" : "▶"}</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-
-            {/* Text Content */}
-            {question.content.text && (
-              <Text style={styles.questionText}>{question.content.text}</Text>
-            )}
-
-            {/* Warning Indicator */}
-            {showWarning && (
-              <View style={styles.warningBadge}>
-                <Text style={styles.warningText}>!</Text>
-              </View>
-            )}
-          </View>
-
-          {/* MCQ Options */}
-          <View style={styles.optionsContainer}>
-            {question.mcqs.map((mcq: any) => (
-              <TouchableOpacity
-                key={mcq.optionNumber}
-                style={[
-                  styles.optionButton,
-                  selectedAnswer === mcq.optionNumber &&
-                    styles.optionButtonSelected,
-                ]}
-                onPress={() => handleAnswerSelect(mcq.optionNumber)}
-              >
-                <View style={styles.optionNumberCircle}>
-                  <Text style={styles.optionNumberText}>
-                    {mcq.optionNumber}
+        {/* Main Content */}
+        <View style={styles.mainContent}>
+          {/* Question Section */}
+          <View style={styles.questionSection}>
+            <ScrollView
+              style={styles.questionScrollView}
+              contentContainerStyle={styles.questionScrollContent}
+            >
+              {/* Group Title */}
+              {question.groupInfo && (
+                <View style={styles.groupHeader}>
+                  <Text style={styles.groupTitle}>
+                    {question.groupInfo.groupTitleKorean}
                   </Text>
                 </View>
+              )}
 
-                <View style={styles.optionContent}>
-                  {mcq.content.type === "text" ? (
-                    <Text style={styles.optionText}>{mcq.content.text}</Text>
-                  ) : (
-                    <Image
-                      source={{ uri: mcq.content.imageUrl }}
-                      style={styles.optionImage}
-                      resizeMode="contain"
-                    />
-                  )}
+              <Text style={styles.questionNumber}>{questionNumber}.</Text>
+
+              {/* Audio Player */}
+              {question.content.type === "audio" && (
+                <TouchableOpacity
+                  style={styles.audioPlayer}
+                  //   onPress={playAudio}
+                >
+                  <View style={styles.audioButton}>
+                    <Text style={styles.audioIcon}>
+                      {isPlaying ? "⏸" : "▶"}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+
+              {/* Text Content */}
+              {question.content.text && (
+                <Text style={styles.questionText}>{question.content.text}</Text>
+              )}
+
+              {/* Warning Indicator */}
+              {showWarning && (
+                <View style={styles.warningBadge}>
+                  <Text style={styles.warningText}>!</Text>
                 </View>
-              </TouchableOpacity>
-            ))}
+              )}
+            </ScrollView>
+          </View>
+
+          {/* Options Section */}
+          <View style={styles.optionsSection}>
+            <ScrollView
+              style={styles.optionsScrollView}
+              contentContainerStyle={styles.optionsScrollContent}
+            >
+              {question.mcqs.map((mcq: any, index: number) => (
+                <TouchableOpacity
+                  key={mcq.optionNumber}
+                  style={[
+                    styles.optionButton,
+                    selectedAnswer === mcq.optionNumber &&
+                      styles.optionButtonSelected,
+                    index > 0 && styles.optionButtonSpacing,
+                  ]}
+                  onPress={() => handleAnswerSelect(mcq.optionNumber)}
+                >
+                  <View style={styles.optionNumberCircle}>
+                    <Text style={styles.optionNumberText}>
+                      {mcq.optionNumber}
+                    </Text>
+                  </View>
+
+                  <View style={styles.optionContent}>
+                    {mcq.content.type === "text" ? (
+                      <Text style={styles.optionText}>{mcq.content.text}</Text>
+                    ) : (
+                      <Image
+                        source={{ uri: mcq.content.imageUrl }}
+                        style={styles.optionImage}
+                        resizeMode="contain"
+                      />
+                    )}
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
           </View>
         </View>
-      </ScrollView>
 
-      {/* Navigation Footer */}
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handlePrev}
-          disabled={parseInt(questionNumber) === 1}
-        >
-          <Text style={styles.navButtonText}>◀ PREV</Text>
-        </TouchableOpacity>
+        {/* Navigation Footer */}
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              parseInt(questionNumber) === 1 && styles.navButtonDisabled,
+            ]}
+            onPress={handlePrev}
+            disabled={parseInt(questionNumber) === 1}
+          >
+            <Text
+              style={[
+                styles.navButtonText,
+                parseInt(questionNumber) === 1 && styles.navButtonTextDisabled,
+              ]}
+            >
+              ◀ PREV
+            </Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.wholeQuestionsButton}
-          onPress={handleWholeQuestions}
-        >
-          <Text style={styles.wholeQuestionsIcon}>⊞</Text>
-          <Text style={styles.wholeQuestionsText}>WHOLE QUESTIONS</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.wholeQuestionsButton}
+            onPress={handleWholeQuestions}
+          >
+            <Text style={styles.wholeQuestionsIcon}>⊞</Text>
+            <Text style={styles.wholeQuestionsText}>WHOLE QUESTIONS</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.navButton}
-          onPress={handleNext}
-          disabled={parseInt(questionNumber) === 40}
-        >
-          <Text style={styles.navButtonText}>NEXT ▶</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.navButton,
+              parseInt(questionNumber) === 40 && styles.navButtonDisabled,
+            ]}
+            onPress={handleNext}
+            disabled={parseInt(questionNumber) === 40}
+          >
+            <Text
+              style={[
+                styles.navButtonText,
+                parseInt(questionNumber) === 40 && styles.navButtonTextDisabled,
+              ]}
+            >
+              NEXT ▶
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
   );
 }
 
@@ -284,12 +321,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#F5F5F5",
   },
+  groupHeader: {
+    // borderRadius: 10,
+    // marginBottom: 20,
+    marginRight: "auto",
+  },
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+  },
   header: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingTop: 50,
+    paddingTop: 30,
     paddingBottom: 15,
     backgroundColor: "#FFFFFF",
     borderBottomWidth: 1,
@@ -308,31 +355,27 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#333",
   },
-  scrollView: {
+  mainContent: {
     flex: 1,
-  },
-  contentContainer: {
+    flexDirection: "row",
     padding: 20,
+    gap: 15,
+    paddingBottom: 20, // Space for footer
   },
-  groupHeader: {
-    backgroundColor: "#FFFFFF",
-    padding: 15,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  groupTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-  },
-  questionContainer: {
+  questionSection: {
+    flex: 1,
     backgroundColor: "#FFFFFF",
     borderRadius: 15,
+    overflow: "hidden",
+  },
+  questionScrollView: {
+    flex: 1,
+  },
+  questionScrollContent: {
     padding: 20,
-    marginBottom: 20,
     alignItems: "center",
     minHeight: 200,
-    justifyContent: "center",
+    paddingBottom: 50,
   },
   questionNumber: {
     fontSize: 18,
@@ -343,6 +386,7 @@ const styles = StyleSheet.create({
   audioPlayer: {
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 20,
   },
   audioButton: {
     width: 80,
@@ -366,6 +410,7 @@ const styles = StyleSheet.create({
     color: "#333",
     textAlign: "center",
     marginTop: 15,
+    lineHeight: 24,
   },
   warningBadge: {
     position: "absolute",
@@ -383,17 +428,30 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
   },
-  optionsContainer: {
-    gap: 15,
+  optionsSection: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 15,
+    overflow: "hidden",
+  },
+  optionsScrollView: {
+    flex: 1,
+  },
+  optionsScrollContent: {
+    padding: 15,
+    paddingBottom: 50,
   },
   optionButton: {
     backgroundColor: "#FFFFFF",
     borderRadius: 10,
-    padding: 15,
+    padding: 10,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 2,
     borderColor: "#E0E0E0",
+  },
+  optionButtonSpacing: {
+    marginTop: 12,
   },
   optionButtonSelected: {
     borderColor: "#4FC3F7",
@@ -422,6 +480,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#333",
     flex: 1,
+    lineHeight: 22,
   },
   optionImage: {
     width: 120,
@@ -429,29 +488,39 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   footer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
-    backgroundColor: "#FFFFFF",
     paddingVertical: 15,
     paddingHorizontal: 20,
     justifyContent: "space-between",
     alignItems: "center",
-    borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
   },
   navButton: {
     backgroundColor: "#4FC3F7",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 25,
+    minWidth: 100,
+    alignItems: "center",
+  },
+  navButtonDisabled: {
+    backgroundColor: "#B0BEC5",
+    opacity: 0.6,
   },
   navButtonText: {
     color: "#FFFFFF",
     fontSize: 14,
     fontWeight: "600",
   },
+  navButtonTextDisabled: {
+    color: "#E0E0E0",
+  },
   wholeQuestionsButton: {
     backgroundColor: "#4FC3F7",
-    paddingVertical: 12,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 25,
     flexDirection: "row",

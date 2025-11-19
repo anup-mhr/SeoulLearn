@@ -58,7 +58,8 @@
           "microphonePermission": "Allow SeoulLearn to access your microphone."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true

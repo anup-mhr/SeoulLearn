@@ -1,4 +1,4 @@
-import { colors } from "@/constants/theme";
+import colors from "@/constants/color";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link } from "expo-router";

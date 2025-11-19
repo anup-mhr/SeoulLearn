@@ -14,7 +14,8 @@ export default function SplashScreen() {
     const timer = setTimeout(() => {
       if (!loading) {
         if (user) {
-          router.push("/(tabs)/dashboard");
+          router.push("/exam/exam_001");
+          // router.push("/(tabs)/dashboard");
         } else {
           router.push("/onboarding");
           // router.push("/(tabs)/dashboard");
